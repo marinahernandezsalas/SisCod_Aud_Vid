@@ -79,7 +79,7 @@ def compress_to_bw(input_image, output_image, quality=0):
         ]
     subprocess.run(command, check=True)
 #Example of EX4
-output_image = '/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS_video/SisCod_Aud_Vid/resizedandBW.jpeg'
+output_image = '/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS_video/SisCod_Aud_Vid/compressBW.jpeg'
 compress_to_bw(input_image, output_image)
 
 
