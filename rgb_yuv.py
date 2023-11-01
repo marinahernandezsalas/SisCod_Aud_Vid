@@ -1,8 +1,7 @@
 import subprocess
 import numpy as np
-from PIL import Image
 from scipy.fftpack import dct, idct
-
+from PIL import Image
 ##EX1 
 def rgb_to_yuv(r, g, b):
     y = 0.299 * r + 0.587 * g + 0.114 * b
@@ -29,8 +28,8 @@ def resize_and_convert_image(input_file, output_file, width, height):
     subprocess.run(ffmpeg_command, shell=True)
 
 #Example of EX2
-input_image = '/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS/SISCOD/siscod_lab1.jpeg'  # Full path to the input image file
-output_image = '/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS/SISCOD/output1.jpeg'  # Path to the resized output image file
+input_image = '/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS_video/SisCod_Aud_Vid/siscod_lab1.jpeg'  # Full path to the input image file
+output_image = '/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS_video/SisCod_Aud_Vid/resized.jpeg'  # Path to the resized output image file
 new_width = 320  #New width of the image
 new_height = 240  #New height of the image
 resize_and_convert_image(input_image, output_image, new_width, new_height)
@@ -70,14 +69,20 @@ print(serpentine(input_image))
 
 
 ##EX4 
-def compress_to_bw(input_file, output_file, quality=0):
-    #FFmpeg command to convert the image to grayscale with hard compression and save as JPEG
-    ffmpeg_command = f'ffmpeg -i {input_file} -vf format=gray -q:v {str(quality)} {output_file}'
-    subprocess.run(ffmpeg_command, shell=True)
-
+def compress_to_bw(input_image, output_image, quality=0):
+    command = [
+            'ffmpeg',
+            '-i', input_image,
+            '-vf', 'format=gray',
+            '-q:v', str(quality),
+            output_image
+        ]
+    subprocess.run(command, check=True)
 #Example of EX4
-output_image_path = '/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS/SISCOD/output_bw_compressed1.jpg'
-compress_to_bw(input_image, output_image_path)
+output_image = '/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS_video/SisCod_Aud_Vid/resizedandBW.jpeg'
+compress_to_bw(input_image, output_image)
+
+
 
 
 ##EX5
@@ -100,24 +105,34 @@ print("Encoded bytes:", run_length_encode(input_bytes))
 
 
 ##EX6
-def forward_dct(self, input_data):
-    return dct(dct(input_data, axis=0, norm='ortho'), axis=1, norm='ortho')
+class DCTConverter:
+    def _init_(self):
+        pass
 
-def inverse_dct(self, dct_data):
-    return idct(idct(dct_data, axis=0, norm='ortho'), axis=1, norm='ortho')
+    def forward_dct(self, data):
+        return dct(dct(data.T, norm='ortho').T, norm='ortho')
+
+    def inverse_dct(self, encoded_data):
+        return idct(idct(encoded_data.T, norm='ortho').T, norm='ortho')
 
 #Example of EX6
+#
+output_image = '/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS_video/SisCod_Aud_Vid/reconstructed_image.jpeg'
+
 #First of all, we need to load an image as a numpy array
-image = np.array(Image.open(input_image).convert('L'))  # 'L' converts the image to grayscale
+image = np.array(Image.open(input_image).convert('L'))
+
+#Create or initialize an instance of the DCTConverter class
+dct_converter = DCTConverter()
 
 #Then do the forward DCT on the image
-dct_image = forward_dct(image)
+dct_image = dct_converter.forward_dct(image)
 
 #Later, do the inverse DCT to reconstruct the image
-reconstructed_image = inverse_dct(dct_image)
+reconstructed_image = dct_converter.inverse_dct(dct_image)
 
 #Then convert the reconstructed numpy array back to an image
 reconstructed_image = Image.fromarray(np.uint8(reconstructed_image))
 
 #And finally, save the reconstructed image
-reconstructed_image.save('reconstructed_image1.jpg')
+reconstructed_image.save(output_image)
