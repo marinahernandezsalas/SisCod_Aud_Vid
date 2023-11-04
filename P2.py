@@ -83,6 +83,6 @@ import sys
 sys.path.append('/Users/marina/Desktop/UNI/4rdyear/1rstTerm/CodAudioVideo/LABS_video/SisCod_Aud_Vid')  # Add the path to the directory containing rgb_yuv.py
 
 from rgb_yuv import *
-rgb_values = (255, 0, 0)  
+rgb_values = (255, 0, 0)
 print("RGB to YUV:", rgb_to_yuv(*rgb_values))
 
